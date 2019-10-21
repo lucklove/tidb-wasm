@@ -23,7 +23,7 @@ import (
 	"github.com/pingcap/tidb/bindinfo"
 	"github.com/pingcap/tidb/domain"
 	"github.com/pingcap/tidb/infoschema"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/planner/cascades"
 	plannercore "github.com/pingcap/tidb/planner/core"
 	"github.com/pingcap/tidb/privilege"
@@ -148,7 +148,7 @@ func addHintForSelect(ctx sessionctx.Context, stmt ast.StmtNode, normdOrigSQL, h
 			return nil
 		}
 		if bindRecord.Status == bindinfo.Using {
-			metrics.BindUsageCounter.WithLabelValues(metrics.ScopeSession).Inc()
+			// remove metrics
 			oriHint := bindinfo.CollectHint(stmt)
 			bindinfo.BindHint(stmt, bindRecord.HintsSet)
 			return oriHint
@@ -160,7 +160,7 @@ func addHintForSelect(ctx sessionctx.Context, stmt ast.StmtNode, normdOrigSQL, h
 		bindRecord = globalHandle.GetBindRecord(hash, normdOrigSQL, "")
 	}
 	if bindRecord != nil {
-		metrics.BindUsageCounter.WithLabelValues(metrics.ScopeGlobal).Inc()
+		// remove metrics
 		oriHint := bindinfo.CollectHint(stmt)
 		bindinfo.BindHint(stmt, bindRecord.HintsSet)
 		return oriHint

@@ -30,7 +30,7 @@ import (
 	"github.com/pingcap/errors"
 	"github.com/pingcap/failpoint"
 	"github.com/pingcap/parser/terror"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/util"
 	"github.com/pingcap/tidb/util/logutil"
 	"go.uber.org/zap"
@@ -159,10 +159,10 @@ func NewSession(ctx context.Context, logPrefix string, etcdCli *clientv3.Client,
 			}
 		})
 
-		startTime := time.Now()
+		//startTime := time.Now()
 		etcdSession, err = concurrency.NewSession(etcdCli,
 			concurrency.WithTTL(ttl), concurrency.WithContext(ctx))
-		metrics.NewSessionHistogram.WithLabelValues(logPrefix, metrics.RetLabel(err)).Observe(time.Since(startTime).Seconds())
+		// remove metrics
 		if err == nil {
 			break
 		}
@@ -222,7 +222,7 @@ func (m *ownerManager) campaignLoop(ctx context.Context, etcdSession *concurrenc
 		if r := recover(); r != nil {
 			buf := util.GetStack()
 			logutil.BgLogger().Error("recover panic", zap.String("prompt", m.prompt), zap.Any("error", r), zap.String("buffer", string(buf)))
-			metrics.PanicCounter.WithLabelValues(metrics.LabelDDLOwner).Inc()
+			// remove metrics
 		}
 	}()
 
@@ -231,7 +231,7 @@ func (m *ownerManager) campaignLoop(ctx context.Context, etcdSession *concurrenc
 	var err error
 	for {
 		if err != nil {
-			metrics.CampaignOwnerCounter.WithLabelValues(m.prompt, err.Error()).Inc()
+			// remove metrics
 		}
 
 		select {
@@ -277,7 +277,7 @@ func (m *ownerManager) campaignLoop(ctx context.Context, etcdSession *concurrenc
 		m.watchOwner(ctx, etcdSession, ownerKey)
 		m.RetireOwner()
 
-		metrics.CampaignOwnerCounter.WithLabelValues(m.prompt, metrics.NoLongerOwner).Inc()
+		// remove metrics
 		logutil.Logger(logCtx).Warn("is not the owner")
 	}
 }
@@ -331,28 +331,28 @@ func (m *ownerManager) watchOwner(ctx context.Context, etcdSession *concurrency.
 		select {
 		case resp, ok := <-watchCh:
 			if !ok {
-				metrics.WatchOwnerCounter.WithLabelValues(m.prompt, metrics.WatcherClosed).Inc()
+				// remove metrics
 				logutil.Logger(logCtx).Info("watcher is closed, no owner")
 				return
 			}
 			if resp.Canceled {
-				metrics.WatchOwnerCounter.WithLabelValues(m.prompt, metrics.Cancelled).Inc()
+				// remove metrics
 				logutil.Logger(logCtx).Info("watch canceled, no owner")
 				return
 			}
 
 			for _, ev := range resp.Events {
 				if ev.Type == mvccpb.DELETE {
-					metrics.WatchOwnerCounter.WithLabelValues(m.prompt, metrics.Deleted).Inc()
+					// remove metrics
 					logutil.Logger(logCtx).Info("watch failed, owner is deleted")
 					return
 				}
 			}
 		case <-etcdSession.Done():
-			metrics.WatchOwnerCounter.WithLabelValues(m.prompt, metrics.SessionDone).Inc()
+			// remove metrics
 			return
 		case <-ctx.Done():
-			metrics.WatchOwnerCounter.WithLabelValues(m.prompt, metrics.CtxDone).Inc()
+			// remove metrics
 			return
 		}
 	}

@@ -313,7 +313,7 @@ type Storage interface {
 	// GetClient gets a client instance.
 	GetClient() Client
 	// Close store
-	Close() error
+	Close() error 
 	// UUID return a unique ID which represents a Storage.
 	UUID() string
 	// CurrentVersion returns current max committed version.

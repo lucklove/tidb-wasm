@@ -193,7 +193,7 @@ type HotTableIndex struct {
 	IndexID      int64         `json:"index_id"`
 }
 
-// FetchRegionTableIndex constructs a map that maps a table to its hot region information by the given raw hot RegionMetric metrics.
+// FetchRegionTableIndex constructs a map that maps a table to its hot region information by the given raw hot RegionMetric // remove metrics
 func (h *Helper) FetchRegionTableIndex(metrics map[uint64]RegionMetric, allSchemas []*model.DBInfo) ([]HotTableIndex, error) {
 	hotTables := make([]HotTableIndex, 0, len(metrics))
 	for regionID, regionMetric := range metrics {

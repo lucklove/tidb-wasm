@@ -30,7 +30,7 @@ import (
 	"github.com/pingcap/tidb/ddl"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/meta"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/store/mockstore"
 	"github.com/pingcap/tidb/store/tikv/oracle"
@@ -309,12 +309,12 @@ func (*testSuite) TestT(c *C) {
 	c.Assert(*res[0], Equals, SlowQueryInfo{SQL: "ccc", Duration: 2 * time.Second})
 	c.Assert(*res[1], Equals, SlowQueryInfo{SQL: "bbb", Duration: 3 * time.Second})
 
-	metrics.PanicCounter.Reset()
+	// remove metrics
 	// Since the stats lease is 0 now, so create a new ticker will panic.
 	// Test that they can recover from panic correctly.
 	dom.updateStatsWorker(ctx, nil)
 	dom.autoAnalyzeWorker(nil)
-	counter := metrics.PanicCounter.WithLabelValues(metrics.LabelDomain)
+	counter := // remove metrics
 	pb := &dto.Metric{}
 	counter.Write(pb)
 	c.Assert(pb.GetCounter().GetValue(), Equals, float64(2))
