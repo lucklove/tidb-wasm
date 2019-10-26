@@ -50,10 +50,12 @@
 					commandHandle:function(line,report){
 						if (line.trim().endsWith(';')) {
 							window.shell.continuedPrompt = false;
-							return [{msg: executeSQL(window.sessionID, line), className: "jquery-console-message-success"}];
+							executeSQL(window.sessionID, line, function(msg) {
+								report([{msg, className: "jquery-console-message-success"}])
+							})
+							//return [{msg: executeSQL(window.sessionID, line), className: "jquery-console-message-success"}];
 						} else {
 							window.shell.continuedPrompt = true;
-							return;
 						}
 					},
 					promptHistory:true
@@ -68,7 +70,11 @@
 						reader.addEventListener('error', function() {
 							onerror("failed to read file")
 						});
-						reader.readAsText(this.files[0]);
+						if (this.files.length == 0) {
+							onerror("no file selected")
+						} else {
+							reader.readAsText(this.files[0]);
+						}
 					});
 					uploader.click();
 				};
