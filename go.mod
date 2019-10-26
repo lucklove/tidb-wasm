@@ -1,6 +1,7 @@
 module github.com/pingcap/tidb
 
 require (
+	github.com/5kbpers/goleveldb v0.0.0-20191024165536-ae75d5cc1425 // indirect
 	github.com/BurntSushi/toml v0.3.1
 	github.com/StackExchange/wmi v0.0.0-20180725035823-b12b22c5341f // indirect
 	github.com/blacktear23/go-proxyprotocol v0.0.0-20180807104634-af7a81e8dd0d
@@ -69,7 +70,6 @@ require (
 	golang.org/x/text v0.3.2
 	golang.org/x/time v0.0.0-20190308202827-9d24e82272b4 // indirect
 	golang.org/x/tools v0.0.0-20190911022129-16c5e0f7d110
-	google.golang.org/appengine v1.4.0 // indirect
 	google.golang.org/genproto v0.0.0-20190905072037-92dd089d5514 // indirect
 	google.golang.org/grpc v1.23.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
@@ -77,5 +77,7 @@ require (
 	sourcegraph.com/sourcegraph/appdash v0.0.0-20180531100431-4c381bd170b4
 	sourcegraph.com/sourcegraph/appdash-data v0.0.0-20151005221446-73f23eafcf67
 )
+
+replace github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e => github.com/5kbpers/goleveldb v0.0.0-20191024165536-ae75d5cc1425
 
 go 1.13
