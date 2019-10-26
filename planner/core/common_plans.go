@@ -552,7 +552,6 @@ type LoadData struct {
 
 	IsLocal     bool
 	OnDuplicate ast.OnDuplicateKeyHandlingType
-	Path        string
 	Table       *ast.TableName
 	Columns     []*ast.ColumnName
 	FieldsInfo  *ast.FieldsClause

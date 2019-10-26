@@ -2,10 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"syscall/js"
 	"time"
-	"fmt"
 
+	"github.com/pingcap/parser"
+	"github.com/pingcap/parser/ast"
+	"github.com/pingcap/parser/format"
 	"github.com/pingcap/tidb/session"
 	"github.com/pingcap/tidb/store/mockstore"
 	"github.com/pingcap/tidb/store/mockstore/mocktikv"
@@ -33,6 +37,7 @@ func setup() *Kit {
 func main() {
 	k := setup()
 	term := NewTerm()
+	p := parser.New()
 
 	js.Global().Set("createSession", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		fmt.Println("create session")
@@ -50,8 +55,45 @@ func main() {
 		start := time.Now()
 		id := args[0].Int()
 		sql := args[1].String()
-		fmt.Println(sql)
-		if rs, err := k.Exec(id, sql); err != nil {
+		var execSQL string
+		if stmts, _, err := p.Parse(sql, "", ""); err != nil {
+			return term.Error(err)
+		} else {
+			restoreFlags := format.RestoreStringSingleQuotes | format.RestoreKeyWordLowercase | format.RestoreNameBackQuotes |
+				format.RestoreSpacesAroundBinaryOperation
+			for i := range stmts {
+				var sb strings.Builder
+				switch v := stmts[i].(type) {
+				case *ast.LoadDataStmt:
+					path := args[2].Invoke()
+					v.Path = path.String()
+					restoreCtx := format.NewRestoreCtx(restoreFlags, &sb)
+					if v.Restore(restoreCtx) != nil {
+						return term.Error(err)
+					}
+					sb.WriteString(";")
+					execSQL += sb.String()
+				case *ast.LoadStatsStmt:
+					path := args[2].Invoke()
+					v.Path = path.String()
+					restoreCtx := format.NewRestoreCtx(restoreFlags, &sb)
+					if v.Restore(restoreCtx) != nil {
+						return term.Error(err)
+					}
+					sb.WriteString(";")
+					execSQL += sb.String()
+				default:
+					restoreCtx := format.NewRestoreCtx(restoreFlags, &sb)
+					if v.Restore(restoreCtx) != nil {
+						return term.Error(err)
+					}
+					sb.WriteString(";")
+					execSQL += sb.String()
+				}
+			}
+		}
+		fmt.Println(execSQL)
+		if rs, err := k.Exec(id, execSQL); err != nil {
 			return term.Error(err)
 		} else if rs == nil {
 			return term.WriteEmpty(time.Now().Sub(start))
