@@ -56,7 +56,7 @@ import (
 	"github.com/pingcap/parser/terror"
 	"github.com/pingcap/tidb/executor"
 	"github.com/pingcap/tidb/kv"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/plugin"
 	"github.com/pingcap/tidb/sessionctx"
 	"github.com/pingcap/tidb/sessionctx/variable"
@@ -77,46 +77,46 @@ const (
 )
 
 var (
-	queryTotalCounterComSleepOK           = metrics.QueryTotalCounter.WithLabelValues("Sleep", "OK")
-	queryTotalCounterComSleepError        = metrics.QueryTotalCounter.WithLabelValues("Sleep", "Error")
-	queryTotalCounterComQuitOK            = metrics.QueryTotalCounter.WithLabelValues("Quit", "OK")
-	queryTotalCounterComQuitError         = metrics.QueryTotalCounter.WithLabelValues("Quit", "Error")
-	queryTotalCounterComInitDBOK          = metrics.QueryTotalCounter.WithLabelValues("InitDB", "OK")
-	queryTotalCounterComInitDBError       = metrics.QueryTotalCounter.WithLabelValues("InitDB", "Error")
-	queryTotalCounterComQueryOK           = metrics.QueryTotalCounter.WithLabelValues("Query", "OK")
-	queryTotalCounterComQueryError        = metrics.QueryTotalCounter.WithLabelValues("Query", "Error")
-	queryTotalCounterComPingOK            = metrics.QueryTotalCounter.WithLabelValues("Ping", "OK")
-	queryTotalCounterComPingError         = metrics.QueryTotalCounter.WithLabelValues("Ping", "Error")
-	queryTotalCounterComFieldListOK       = metrics.QueryTotalCounter.WithLabelValues("FieldList", "OK")
-	queryTotalCounterComFieldListError    = metrics.QueryTotalCounter.WithLabelValues("FieldList", "Error")
-	queryTotalCounterComPrepareOK         = metrics.QueryTotalCounter.WithLabelValues("StmtPrepare", "OK")
-	queryTotalCounterComPrepareError      = metrics.QueryTotalCounter.WithLabelValues("StmtPrepare", "Error")
-	queryTotalCounterComExecuteOK         = metrics.QueryTotalCounter.WithLabelValues("StmtExecute", "OK")
-	queryTotalCounterComExecuteError      = metrics.QueryTotalCounter.WithLabelValues("StmtExecute", "Error")
-	queryTotalCounterComFetchOK           = metrics.QueryTotalCounter.WithLabelValues("StmtFetch", "OK")
-	queryTotalCounterComFetchError        = metrics.QueryTotalCounter.WithLabelValues("StmtFetch", "Error")
-	queryTotalCounterComCloseOK           = metrics.QueryTotalCounter.WithLabelValues("StmtClose", "OK")
-	queryTotalCounterComCloseError        = metrics.QueryTotalCounter.WithLabelValues("StmtClose", "Error")
-	queryTotalCounterComSendLongDataOK    = metrics.QueryTotalCounter.WithLabelValues("StmtSendLongData", "OK")
-	queryTotalCounterComSendLongDataError = metrics.QueryTotalCounter.WithLabelValues("StmtSendLongData", "Error")
-	queryTotalCounterComResetOK           = metrics.QueryTotalCounter.WithLabelValues("StmtReset", "OK")
-	queryTotalCounterComResetError        = metrics.QueryTotalCounter.WithLabelValues("StmtReset", "Error")
-	queryTotalCounterComSetOptionOK       = metrics.QueryTotalCounter.WithLabelValues("SetOption", "OK")
-	queryTotalCounterComSetOptionError    = metrics.QueryTotalCounter.WithLabelValues("SetOption", "Error")
+	queryTotalCounterComSleepOK           = // remove metrics
+	queryTotalCounterComSleepError        = // remove metrics
+	queryTotalCounterComQuitOK            = // remove metrics
+	queryTotalCounterComQuitError         = // remove metrics
+	queryTotalCounterComInitDBOK          = // remove metrics
+	queryTotalCounterComInitDBError       = // remove metrics
+	queryTotalCounterComQueryOK           = // remove metrics
+	queryTotalCounterComQueryError        = // remove metrics
+	queryTotalCounterComPingOK            = // remove metrics
+	queryTotalCounterComPingError         = // remove metrics
+	queryTotalCounterComFieldListOK       = // remove metrics
+	queryTotalCounterComFieldListError    = // remove metrics
+	queryTotalCounterComPrepareOK         = // remove metrics
+	queryTotalCounterComPrepareError      = // remove metrics
+	queryTotalCounterComExecuteOK         = // remove metrics
+	queryTotalCounterComExecuteError      = // remove metrics
+	queryTotalCounterComFetchOK           = // remove metrics
+	queryTotalCounterComFetchError        = // remove metrics
+	queryTotalCounterComCloseOK           = // remove metrics
+	queryTotalCounterComCloseError        = // remove metrics
+	queryTotalCounterComSendLongDataOK    = // remove metrics
+	queryTotalCounterComSendLongDataError = // remove metrics
+	queryTotalCounterComResetOK           = // remove metrics
+	queryTotalCounterComResetError        = // remove metrics
+	queryTotalCounterComSetOptionOK       = // remove metrics
+	queryTotalCounterComSetOptionError    = // remove metrics
 
-	queryDurationHistogramUse      = metrics.QueryDurationHistogram.WithLabelValues("Use")
-	queryDurationHistogramShow     = metrics.QueryDurationHistogram.WithLabelValues("Show")
-	queryDurationHistogramBegin    = metrics.QueryDurationHistogram.WithLabelValues("Begin")
-	queryDurationHistogramCommit   = metrics.QueryDurationHistogram.WithLabelValues("Commit")
-	queryDurationHistogramRollback = metrics.QueryDurationHistogram.WithLabelValues("Rollback")
-	queryDurationHistogramInsert   = metrics.QueryDurationHistogram.WithLabelValues("Insert")
-	queryDurationHistogramReplace  = metrics.QueryDurationHistogram.WithLabelValues("Replace")
-	queryDurationHistogramDelete   = metrics.QueryDurationHistogram.WithLabelValues("Delete")
-	queryDurationHistogramUpdate   = metrics.QueryDurationHistogram.WithLabelValues("Update")
-	queryDurationHistogramSelect   = metrics.QueryDurationHistogram.WithLabelValues("Select")
-	queryDurationHistogramExecute  = metrics.QueryDurationHistogram.WithLabelValues("Execute")
-	queryDurationHistogramSet      = metrics.QueryDurationHistogram.WithLabelValues("Set")
-	queryDurationHistogramGeneral  = metrics.QueryDurationHistogram.WithLabelValues(metrics.LblGeneral)
+	queryDurationHistogramUse      = // remove metrics
+	queryDurationHistogramShow     = // remove metrics
+	queryDurationHistogramBegin    = // remove metrics
+	queryDurationHistogramCommit   = // remove metrics
+	queryDurationHistogramRollback = // remove metrics
+	queryDurationHistogramInsert   = // remove metrics
+	queryDurationHistogramReplace  = // remove metrics
+	queryDurationHistogramDelete   = // remove metrics
+	queryDurationHistogramUpdate   = // remove metrics
+	queryDurationHistogramSelect   = // remove metrics
+	queryDurationHistogramExecute  = // remove metrics
+	queryDurationHistogramSet      = // remove metrics
+	queryDurationHistogramGeneral  = // remove metrics
 )
 
 // newClientConn creates a *clientConn object.
@@ -200,7 +200,7 @@ func (cc *clientConn) Close() error {
 }
 
 func closeConn(cc *clientConn, connections int) error {
-	metrics.ConnGauge.Set(float64(connections))
+	// remove metrics
 	err := cc.bufReadConn.Close()
 	terror.Log(err)
 	if cc.ctx != nil {
@@ -602,7 +602,7 @@ func (cc *clientConn) Run(ctx context.Context) {
 				zap.Reflect("err", r),
 				zap.String("stack", string(buf)),
 			)
-			metrics.PanicCounter.WithLabelValues(metrics.LabelSession).Inc()
+			// remove metrics
 		}
 		if atomic.LoadInt32(&cc.status) != connStatusShutdown {
 			err := cc.Close()
@@ -659,7 +659,7 @@ func (cc *clientConn) Run(ctx context.Context) {
 				return
 			} else if terror.ErrCritical.Equal(err) {
 				logutil.Logger(ctx).Error("critical error, stop the server listener", zap.Error(err))
-				metrics.CriticalErrorCounter.Add(1)
+				// remove metrics
 				select {
 				case cc.server.stopListenerCh <- struct{}{}:
 				default:
@@ -800,13 +800,13 @@ func (cc *clientConn) addMetrics(cmd byte, startTime time.Time, err error) {
 	default:
 		label := strconv.Itoa(int(cmd))
 		if err != nil {
-			metrics.QueryTotalCounter.WithLabelValues(label, "ERROR").Inc()
+			// remove metrics
 		} else {
-			metrics.QueryTotalCounter.WithLabelValues(label, "OK").Inc()
+			// remove metrics
 		}
 	}
 	stmtType := cc.ctx.GetSessionVars().StmtCtx.StmtType
-	sqlType := metrics.LblGeneral
+	sqlType := // remove metrics
 	if stmtType != "" {
 		sqlType = stmtType
 	}
@@ -836,10 +836,10 @@ func (cc *clientConn) addMetrics(cmd byte, startTime time.Time, err error) {
 		queryDurationHistogramExecute.Observe(time.Since(startTime).Seconds())
 	case "Set":
 		queryDurationHistogramSet.Observe(time.Since(startTime).Seconds())
-	case metrics.LblGeneral:
+	case // remove metrics
 		queryDurationHistogramGeneral.Observe(time.Since(startTime).Seconds())
 	default:
-		metrics.QueryDurationHistogram.WithLabelValues(sqlType).Observe(time.Since(startTime).Seconds())
+		// remove metrics
 	}
 }
 
@@ -1210,7 +1210,7 @@ func (cc *clientConn) handleLoadStats(ctx context.Context, loadStatsInfo *execut
 func (cc *clientConn) handleQuery(ctx context.Context, sql string) (err error) {
 	rs, err := cc.ctx.Execute(ctx, sql)
 	if err != nil {
-		metrics.ExecuteErrorCounter.WithLabelValues(metrics.ExecuteErrorToLabel(err)).Inc()
+		// remove metrics
 		return err
 	}
 	status := atomic.LoadInt32(&cc.status)

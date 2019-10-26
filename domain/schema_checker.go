@@ -17,7 +17,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 )
 
 // SchemaChecker is used for checking schema-validity.
@@ -53,13 +53,13 @@ func (s *SchemaChecker) Check(txnTS uint64) error {
 		case ResultSucc:
 			return nil
 		case ResultFail:
-			metrics.SchemaLeaseErrorCounter.WithLabelValues("changed").Inc()
+			// remove metrics
 			return ErrInfoSchemaChanged
 		case ResultUnknown:
 			time.Sleep(time.Duration(schemaOutOfDateRetryInterval))
 		}
 
 	}
-	metrics.SchemaLeaseErrorCounter.WithLabelValues("outdated").Inc()
+	// remove metrics
 	return ErrInfoSchemaExpired
 }

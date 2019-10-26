@@ -33,7 +33,7 @@ The meta data of the table is not really deleted. The meta key format is `Table:
 As you can see, if we can restore the table before the GC worker deletes the table data, we can restore the table completely. If the table data is deleted, we can only restore an empty table.
 
 Before we run `ADMIN RESTORE TABLE table_id`, you must:
-* Ensure that no GC task is running and then you can figure this by using TiDB logs and metrics.
+* Ensure that no GC task is running and then you can figure this by using TiDB logs and // remove metrics
 * Increase `tikv_gc_life_time` to a sufficient value.
 
 ## Compatibility

@@ -36,7 +36,7 @@ import (
 	"github.com/pingcap/tidb/infoschema/perfschema"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/meta"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/owner"
 	"github.com/pingcap/tidb/privilege/privileges"
 	"github.com/pingcap/tidb/sessionctx"
@@ -339,12 +339,12 @@ func (do *Domain) Reload() error {
 		changedTableIDs []int64
 	)
 	neededSchemaVersion, changedTableIDs, fullLoad, err = do.loadInfoSchema(do.infoHandle, schemaVersion, ver.Ver)
-	metrics.LoadSchemaDuration.Observe(time.Since(startTime).Seconds())
+	// remove metrics
 	if err != nil {
-		metrics.LoadSchemaCounter.WithLabelValues("failed").Inc()
+		// remove metrics
 		return err
 	}
-	metrics.LoadSchemaCounter.WithLabelValues("succ").Inc()
+	// remove metrics
 
 	if fullLoad {
 		logutil.BgLogger().Info("full load and reset schema validator")
@@ -795,7 +795,7 @@ func (do *Domain) LoadPrivilegeLoop(ctx sessionctx.Context) error {
 
 			count = 0
 			err := do.privHandle.Update(ctx)
-			metrics.LoadPrivilegeCounter.WithLabelValues(metrics.RetLabel(err)).Inc()
+			// remove metrics
 			if err != nil {
 				logutil.BgLogger().Error("load privilege failed", zap.Error(err))
 			} else {
@@ -1087,7 +1087,7 @@ func recoverInDomain(funcName string, quit bool) {
 	buf := util.GetStack()
 	logutil.BgLogger().Error("recover in domain failed", zap.String("funcName", funcName),
 		zap.Any("error", r), zap.String("buffer", string(buf)))
-	metrics.PanicCounter.WithLabelValues(metrics.LabelDomain).Inc()
+	// remove metrics
 	if quit {
 		// Wait for metrics to be pushed.
 		time.Sleep(time.Second * 15)

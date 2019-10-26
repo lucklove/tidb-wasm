@@ -23,14 +23,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/cznic/mathutil"
+	"github.com/pingcap/tidb/util/mathutil"
 	"github.com/pingcap/errors"
 	"github.com/pingcap/log"
 	"github.com/pingcap/parser/model"
 	"github.com/pingcap/parser/mysql"
 	"github.com/pingcap/tidb/infoschema"
 	"github.com/pingcap/tidb/kv"
-	"github.com/pingcap/tidb/metrics"
+	// remove metrics
 	"github.com/pingcap/tidb/sessionctx/stmtctx"
 	"github.com/pingcap/tidb/sessionctx/variable"
 	"github.com/pingcap/tidb/statistics"
@@ -185,12 +185,12 @@ func (s *SessionStatsCollector) StoreQueryFeedback(feedback interface{}, h *Hand
 	}
 	rate := q.CalcErrorRate()
 	if rate >= MinLogErrorRate && (q.Actual() >= MinLogScanCount || q.Expected >= MinLogScanCount) {
-		metrics.SignificantFeedbackCounter.Inc()
+		// remove metrics
 		if log.GetLevel() == zap.DebugLevel {
 			h.logDetailedInfo(q)
 		}
 	}
-	metrics.StatsInaccuracyRate.Observe(rate)
+	// remove metrics
 	s.Lock()
 	defer s.Unlock()
 	isIndex := q.Tp == statistics.IndexType
@@ -398,9 +398,9 @@ func (h *Handle) DumpFeedbackToKV(fb *statistics.QueryFeedback) error {
 	_, err = h.mu.ctx.(sqlexec.SQLExecutor).Execute(context.TODO(), sql)
 	h.mu.Unlock()
 	if err != nil {
-		metrics.DumpFeedbackCounter.WithLabelValues(metrics.LblError).Inc()
+		// remove metrics
 	} else {
-		metrics.DumpFeedbackCounter.WithLabelValues(metrics.LblOK).Inc()
+		// remove metrics
 	}
 	return errors.Trace(err)
 }
@@ -575,7 +575,7 @@ func (h *Handle) deleteOutdatedFeedback(tableID, histID, isIndex int64) error {
 func (h *Handle) dumpStatsUpdateToKV(tableID, isIndex int64, q *statistics.QueryFeedback, hist *statistics.Histogram, cms *statistics.CMSketch) error {
 	hist = statistics.UpdateHistogram(hist, q)
 	err := h.SaveStatsToStorage(tableID, -1, int(isIndex), hist, cms, 0)
-	metrics.UpdateStatsCounter.WithLabelValues(metrics.RetLabel(err)).Inc()
+	// remove metrics
 	return errors.Trace(err)
 }
 
@@ -751,12 +751,12 @@ func (h *Handle) execAutoAnalyze(sql string) {
 	startTime := time.Now()
 	_, _, err := h.restrictedExec.ExecRestrictedSQL(sql)
 	dur := time.Since(startTime)
-	metrics.AutoAnalyzeHistogram.Observe(dur.Seconds())
+	// remove metrics
 	if err != nil {
 		logutil.BgLogger().Error("[stats] auto analyze failed", zap.String("sql", sql), zap.Duration("cost_time", dur), zap.Error(err))
-		metrics.AutoAnalyzeCounter.WithLabelValues("failed").Inc()
+		// remove metrics
 	} else {
-		metrics.AutoAnalyzeCounter.WithLabelValues("succ").Inc()
+		// remove metrics
 	}
 }
 

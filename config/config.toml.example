@@ -206,7 +206,7 @@ memory-guard-ratio = 0.1
 # Enable opentracing.
 enable = false
 
-# Whether to enable the rpc metrics.
+# Whether to enable the rpc // remove metrics
 rpc-metrics = false
 
 [opentracing.sampler]
