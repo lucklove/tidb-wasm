@@ -27,6 +27,8 @@
 				const go = new Go();
 				WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
 					go.run(result.instance);
+					window.sessionID = createSession()
+                    bootstrapTerm()
 				});
 			}
 
@@ -46,7 +48,7 @@
 					commandHandle:function(line,report){
 						if (line.trim().endsWith(';')) {
 							window.shell.continuedPrompt = false;
-							return [{msg: execute(line), className: "jquery-console-message-success"}];
+							return [{msg: executeSQL(window.sessionID, line), className: "jquery-console-message-success"}];
 						} else {
 							window.shell.continuedPrompt = true;
 							return;
@@ -57,7 +59,6 @@
 			}
 
 			bootstrapGo();
-			bootstrapTerm();
 		</script>
 	</body>
 </html>
