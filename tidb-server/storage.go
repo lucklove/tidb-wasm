@@ -22,11 +22,11 @@ func (s *Storage) Begin() (kv.Transaction, error) {
 func (s *Storage) BeginWithStartTS(startTS uint64) (kv.Transaction, error) {
 	return nil, nil
 	/*
-	if trans, err := t.Begin(); err == nil {
-		return trans.WithStartTs(startTs), nil
-	} else {
-		return nil, err
-	}
+		if trans, err := t.Begin(); err == nil {
+			return trans.WithStartTs(startTs), nil
+		} else {
+			return nil, err
+		}
 	*/
 }
 
@@ -69,6 +69,7 @@ func (s *Storage) Describe() string {
 func (s *Storage) ShowStatus(ctx context.Context, key string) (interface{}, error) {
 	return nil, nil
 }
+
 /*
 type Transaction struct {
 	startTs uint64

@@ -1,7 +1,7 @@
 module github.com/pingcap/tidb
 
 require (
-	github.com/5kbpers/goleveldb v0.0.0-20191026012746-22c00d9a18e3 // indirect
+	github.com/5kbpers/goleveldb v0.0.0-20191026012746-22c00d9a18e3
 	github.com/BurntSushi/toml v0.3.1
 	github.com/StackExchange/wmi v0.0.0-20180725035823-b12b22c5341f // indirect
 	github.com/blacktear23/go-proxyprotocol v0.0.0-20180807104634-af7a81e8dd0d
@@ -39,7 +39,6 @@ require (
 	github.com/pingcap/check v0.0.0-20190102082844-67f458068fc8
 	github.com/pingcap/errors v0.11.4
 	github.com/pingcap/failpoint v0.0.0-20190512135322-30cc7431d99c
-	github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e
 	github.com/pingcap/kvproto v0.0.0-20190910074005-0e61b6f435c1
 	github.com/pingcap/log v0.0.0-20190715063458-479153f07ebd
 	github.com/pingcap/parser v0.0.0-20190923031704-33636bc5e5d6
@@ -78,7 +77,5 @@ require (
 	sourcegraph.com/sourcegraph/appdash v0.0.0-20180531100431-4c381bd170b4
 	sourcegraph.com/sourcegraph/appdash-data v0.0.0-20151005221446-73f23eafcf67
 )
-
-replace github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e => github.com/5kbpers/goleveldb v0.0.0-20191026012746-22c00d9a18e3
 
 go 1.13

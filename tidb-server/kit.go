@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 
+	"github.com/pingcap/errors"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/session"
+	"github.com/pingcap/parser/auth"
 	"github.com/pingcap/tidb/types"
-	"github.com/pingcap/errors"
 	"github.com/pingcap/tidb/util/sqlexec"
 )
 
@@ -20,10 +21,13 @@ func NewKit(store kv.Storage) *Kit {
 	if err != nil {
 		panic(err)
 	}
+	if !se.Auth(&auth.UserIdentity{Username: "root", Hostname: "localhost", AuthUsername: "root", AuthHostname: "localhost"}, nil, nil) {
+		panic("auth failed")
+	}
 
 	return &Kit{
 		store: store,
-		se: se,
+		se:    se,
 	}
 }
 

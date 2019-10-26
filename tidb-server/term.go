@@ -1,18 +1,20 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
-	"bufio"
 	"strings"
+	"time"
 
 	"github.com/pingcap/parser/ast"
 )
 
 type Terminal interface {
 	Read() string
-	Write([]*ast.ResultField, [][]string) error
-	Error(error)
+	WriteRows([]*ast.ResultField, [][]string, time.Duration) string
+	WriteEmpty(time.Duration) string
+	Error(error) string
 }
 
 func NewTerm() Terminal {
@@ -20,7 +22,7 @@ func NewTerm() Terminal {
 }
 
 type Term struct {
-	reader *bufio.Reader
+	reader   *bufio.Reader
 	commands []string
 }
 
@@ -56,7 +58,7 @@ func (t *Term) appendCommands(cmds []string) (cont bool) {
 		panic("append empty commands")
 	}
 	if cmds[len(cmds)-1] == "" {
-		cmds = cmds[0:len(cmds)-1]
+		cmds = cmds[0 : len(cmds)-1]
 		if len(cmds) == 0 {
 			return len(t.commands) != 0
 		}
@@ -74,17 +76,17 @@ func (t *Term) appendCommands(cmds []string) (cont bool) {
 }
 
 type Column struct {
-	Name string
+	Name   string
 	Values []string
-	Len  int
+	Len    int
 }
 
-func (t *Term) Write(fields []*ast.ResultField, rows [][]string) error {
+func (t *Term) WriteRows(fields []*ast.ResultField, rows [][]string, d time.Duration) string {
 	columns := make([]*Column, len(fields))
 	for i := range columns {
 		columns[i] = &Column{
 			Name: fields[i].Column.Name.O,
-			Len: len(fields[i].Column.Name.O),
+			Len:  len(fields[i].Column.Name.O),
 		}
 	}
 
@@ -98,42 +100,53 @@ func (t *Term) Write(fields []*ast.ResultField, rows [][]string) error {
 		}
 	}
 
-	t.divider(columns)
-	t.print(columns, -1)
-	t.divider(columns)
+	ret := t.divider(columns)
+	ret += t.print(columns, -1)
+	ret += t.divider(columns)
 	for idx := range rows {
-		t.print(columns, idx)
-		t.divider(columns)
+		ret += t.print(columns, idx)
+	}
+	if len(rows) != 0 {
+		ret += t.divider(columns)	
+		ret += fmt.Sprintf("%d row in set (%.2f sec)\n", len(rows), d.Seconds())
+	} else {
+		ret += fmt.Sprintf("Empty set (%.2f sec)\n", d.Seconds())
 	}
 
-	return nil
+	return ret
 }
 
-func (*Term) divider(cs []*Column) {
-	fmt.Print("+")
+func (t *Term) WriteEmpty(d time.Duration) string {
+	return fmt.Sprintf("Execute success (%.2f sec)\n", d.Seconds())
+}
+
+func (*Term) divider(cs []*Column) string {
+	ret := fmt.Sprint("+")
 	for _, c := range cs {
-		for i := 0; i < c.Len + 2; i++ {
-			fmt.Print("-")
+		for i := 0; i < c.Len+2; i++ {
+			ret += fmt.Sprint("-")
 		}
-		fmt.Print("+")
+		ret += fmt.Sprint("+")
 	}
-	fmt.Println("")
+	ret += fmt.Sprintln("")
+	return ret
 }
 
-func (*Term) print(cs []*Column, idx int) {
-	fmt.Print("| ")
+func (*Term) print(cs []*Column, idx int) string {
+	ret := fmt.Sprint("| ")
 	for _, c := range cs {
 		format := fmt.Sprintf("%%-%dv", c.Len)
 		if idx < 0 {
-			fmt.Printf(format, c.Name)
+			ret += fmt.Sprintf(format, c.Name)
 		} else {
-			fmt.Printf(format, c.Values[idx])
+			ret += fmt.Sprintf(format, c.Values[idx])
 		}
-		fmt.Print(" | ")
+		ret += fmt.Sprint(" | ")
 	}
-	fmt.Println("")
+	ret += fmt.Sprintln("")
+	return ret
 }
 
-func (*Term) Error(err error) {
-	fmt.Println(err)
+func (*Term) Error(err error) string {
+	return fmt.Sprintln(err)
 }
