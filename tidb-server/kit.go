@@ -4,7 +4,6 @@ import (
 	"context"
 	"sync"
 	"syscall/js"
-	"fmt"
 	"time"
 
 	"github.com/pingcap/errors"
@@ -100,12 +99,15 @@ func (k *Kit) handleLoadStats(ctx context.Context, loadStatsInfo *executor.LoadS
 
 	c := make(chan error)
 	js.Global().Get("upload").Invoke(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		loadStatsInfo.Update([]byte(args[0].String()))
-		c <- nil
+		go func() {
+			loadStatsInfo.Update([]byte(args[0].String()))
+			c <- nil
+		}()
 		return nil
 	}), js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("on error")
-		c <- errors.New(args[0].String())
+		go func() {
+			c <- errors.New(args[0].String())
+		}()
 		return nil
 	}))
 
