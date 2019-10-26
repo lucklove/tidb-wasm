@@ -14,6 +14,7 @@
 package mocktikv
 
 import (
+	"fmt"
 	"bytes"
 	"math"
 	"sync"
