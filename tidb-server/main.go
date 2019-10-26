@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"strings"
 	"syscall/js"
 	"time"
-	"fmt"
 
 	"github.com/pingcap/tidb/session"
 	"github.com/pingcap/tidb/store/mockstore"
@@ -49,19 +50,26 @@ func main() {
 	js.Global().Set("executeSQL", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		start := time.Now()
 		id := args[0].Int()
-		sql := args[1].String()
-		fmt.Println(sql)
-		if rs, err := k.Exec(id, sql); err != nil {
-			return term.Error(err)
-		} else if rs == nil {
-			return term.WriteEmpty(time.Now().Sub(start))
-		} else if rows, err := k.ResultSetToStringSlice(context.Background(), id, rs); err != nil {
-			return term.Error(err)
-		} else {
-			msg := term.WriteRows(rs.Fields(), rows, time.Now().Sub(start))
-			fmt.Println(msg)
-			return msg
+		text := args[1].String()
+		ret := ""
+		for _, sql := range strings.Split(text, ";") {
+			if strings.Trim(sql, " ") == "" {
+				continue
+			}
+			fmt.Println(sql)
+			if rs, err := k.Exec(id, sql); err != nil {
+				ret += term.Error(err)
+			} else if rs == nil {
+				ret += term.WriteEmpty(time.Now().Sub(start))
+			} else if rows, err := k.ResultSetToStringSlice(context.Background(), id, rs); err != nil {
+				return term.Error(err)
+			} else {
+				msg := term.WriteRows(rs.Fields(), rows, time.Now().Sub(start))
+				ret += msg
+			}
 		}
+		fmt.Println(ret)
+		return ret
 	}))
 
 	c := make(chan bool)

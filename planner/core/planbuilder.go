@@ -1943,7 +1943,7 @@ func (b *PlanBuilder) buildLoadData(ctx context.Context, ld *ast.LoadDataStmt) (
 }
 
 func (b *PlanBuilder) buildLoadStats(ld *ast.LoadStatsStmt) Plan {
-	p := &LoadStats{Path: ld.Path}
+	p := &LoadStats{}
 	return p
 }
 

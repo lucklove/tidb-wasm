@@ -34,7 +34,6 @@ type LoadStatsExec struct {
 
 // LoadStatsInfo saves the information of loading statistic operation.
 type LoadStatsInfo struct {
-	Path string
 	Ctx  sessionctx.Context
 }
 
@@ -52,9 +51,6 @@ const LoadStatsVarKey loadStatsVarKeyType = 0
 // Next implements the Executor Next interface.
 func (e *LoadStatsExec) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.GrowAndReset(e.maxChunkSize)
-	if len(e.info.Path) == 0 {
-		return errors.New("Load Stats: file path is empty")
-	}
 	val := e.ctx.Value(LoadStatsVarKey)
 	if val != nil {
 		e.ctx.SetValue(LoadStatsVarKey, nil)
