@@ -107,7 +107,7 @@ func (t *Term) WriteRows(fields []*ast.ResultField, rows [][]string, d time.Dura
 		ret += t.print(columns, idx)
 	}
 	if len(rows) != 0 {
-		ret += t.divider(columns)	
+		ret += t.divider(columns)
 		ret += fmt.Sprintf("%d row in set (%.2f sec)\n", len(rows), d.Seconds())
 	} else {
 		ret += fmt.Sprintf("Empty set (%.2f sec)\n", d.Seconds())

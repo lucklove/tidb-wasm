@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"sync"
+	"syscall/js"
 
 	"github.com/pingcap/errors"
 	"github.com/pingcap/parser/auth"
+	"github.com/pingcap/tidb/executor"
 	"github.com/pingcap/tidb/kv"
 	"github.com/pingcap/tidb/session"
-	"github.com/pingcap/tidb/types"
 	"github.com/pingcap/tidb/util/sqlexec"
 )
 
@@ -43,43 +44,41 @@ func (k *Kit) CreateSession() int {
 }
 
 func (k *Kit) CloseSession(id int) {
+	k.mu.Lock()
+	defer k.mu.Unlock()
 	se, ok := k.sessions[id]
 	if !ok {
 		return
 	}
 	se.Close()
+	delete(k.sessions, id)
 }
 
-func (k *Kit) Exec(id int, sql string, args ...interface{}) (sqlexec.RecordSet, error) {
+func (k *Kit) Exec(id int, sql string) (sqlexec.RecordSet, error) {
 	se, ok := k.sessions[id]
 	if !ok {
 		return nil, errors.New("session not exists")
 	}
+
 	ctx := context.Background()
-	if len(args) == 0 {
-		rss, err := se.Execute(ctx, sql)
-		if err == nil && len(rss) > 0 {
-			return rss[0], nil
+	rss, err := se.Execute(ctx, sql)
+	if err == nil && len(rss) > 0 {
+		return rss[0], nil
+	}
+
+	if err != nil {
+		return nil, errors.Trace(err)
+	}
+
+	loadStats := se.Value(executor.LoadStatsVarKey)
+	if loadStats != nil {
+		defer se.SetValue(executor.LoadStatsVarKey, nil)
+		if err := k.handleLoadStats(ctx, loadStats.(*executor.LoadStatsInfo)); err != nil {
+			return nil, errors.Trace(err)
 		}
-		return nil, errors.Trace(err)
 	}
-	stmtID, _, _, err := se.PrepareStmt(sql)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	params := make([]types.Datum, len(args))
-	for i := 0; i < len(params); i++ {
-		params[i] = types.NewDatum(args[i])
-	}
-	rs, err := se.ExecutePreparedStmt(ctx, stmtID, params)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	err = se.DropPreparedStmt(stmtID)
-	if err != nil {
-		return nil, errors.Trace(err)
-	}
-	return rs, nil
+
+	return nil, nil
 }
 
 func (k *Kit) ResultSetToStringSlice(ctx context.Context, id int, rs sqlexec.RecordSet) ([][]string, error) {
@@ -88,4 +87,28 @@ func (k *Kit) ResultSetToStringSlice(ctx context.Context, id int, rs sqlexec.Rec
 		return nil, errors.New("session not exists")
 	}
 	return session.ResultSetToStringSlice(context.Background(), se, rs)
+}
+
+// handleLoadStats does the additional work after processing the 'load stats' query.
+// It sends client a file path, then reads the file content from client, loads it into the storage.
+func (k *Kit) handleLoadStats(ctx context.Context, loadStatsInfo *executor.LoadStatsInfo) error {
+	if loadStatsInfo == nil {
+		return errors.New("load stats: info is empty")
+	}
+
+	c := make(chan error)
+	js.Global().Get("upload").Invoke(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			loadStatsInfo.Update([]byte(args[0].String()))
+			c <- nil
+		}()
+		return nil
+	}), js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			c <- errors.New(args[0].String())
+		}()
+		return nil
+	}))
+
+	return <- c
 }

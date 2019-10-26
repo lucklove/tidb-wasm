@@ -7,25 +7,27 @@
 		<style type="text/css" media="screen">
 			div.term { font-size: 14px; margin-top:1em }
 			div.term div.jquery-console-inner
-			 { height:800px; background:#efefef; padding:0.5em; overflow:auto }
+			 { height:800px; background:black; padding:0.5em; overflow:auto }
 			div.term div.jquery-console-prompt-box
-			 { color:#444; font-family:monospace; }
+			 { color: white; font-family:monospace; }
 			div.term div.jquery-console-focus span.jquery-console-cursor
 			 { background:#444; color:#eee; font-weight:bold }
 			div.term div.jquery-console-message-error
 			 { color:#ef0505; font-family:sans-serif; font-weight:bold;
 			   padding:0.1em; }
 			div.term div.jquery-console-message-success
-			 { color:#187718; font-family:monospace;
+			 { color:#09f753; font-family:monospace;
 			   padding:0.1em; white-space: pre;}
-			div.term span.jquery-console-prompt-label { font-weight:bold }
+			div.term span.jquery-console-prompt-label { font-weight:bold; }
 		  </style>
 	</head>
 	<body>
 		<script>
 			function bootstrapGo() {
 				const go = new Go();
-				WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+				fetch("main.wasm").then(r => r.arrayBuffer())
+								  .then(buffer => WebAssembly.instantiate(buffer, go.importObject))
+								  .then(result => {
 					go.run(result.instance);
 					window.sessionID = createSession()
                     bootstrapTerm()
@@ -56,9 +58,24 @@
 					},
 					promptHistory:true
 				});
+				window.upload = function(onsuccess, onerror) {
+					const uploader = document.getElementById('file-uploader')
+					uploader.addEventListener('change', function() {
+						const reader = new FileReader();
+						reader.addEventListener('load', function(e) {
+							onsuccess(e.target.result);
+						});
+						reader.addEventListener('error', function() {
+							onerror("failed to read file")
+						});
+						reader.readAsText(this.files[0]);
+					});
+					uploader.click();
+				};
 			}
 
 			bootstrapGo();
 		</script>
+		<input id='file-uploader' type='file' hidden/>
 	</body>
 </html>

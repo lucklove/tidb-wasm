@@ -565,8 +565,6 @@ type LoadData struct {
 // LoadStats represents a load stats plan.
 type LoadStats struct {
 	baseSchemaProducer
-
-	Path string
 }
 
 // SplitRegion represents a split regions plan.

@@ -749,7 +749,7 @@ func (b *executorBuilder) buildLoadData(v *plannercore.LoadData) Executor {
 func (b *executorBuilder) buildLoadStats(v *plannercore.LoadStats) Executor {
 	e := &LoadStatsExec{
 		baseExecutor: newBaseExecutor(b.ctx, nil, v.ExplainID()),
-		info:         &LoadStatsInfo{v.Path, b.ctx},
+		info:         &LoadStatsInfo{b.ctx},
 	}
 	return e
 }
