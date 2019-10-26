@@ -81,9 +81,6 @@ func (e *LoadDataExec) Next(ctx context.Context, req *chunk.Chunk) error {
 		sctx.SetValue(LoadDataVarKey, nil)
 		return errors.New("Load Data: previous load data option isn't closed normal")
 	}
-	if e.loadDataInfo.Path == "" {
-		return errors.New("Load Data: infile path is empty")
-	}
 	sctx.SetValue(LoadDataVarKey, e.loadDataInfo)
 
 	return nil
@@ -113,7 +110,6 @@ type LoadDataInfo struct {
 	*InsertValues
 
 	row         []types.Datum
-	Path        string
 	Table       table.Table
 	FieldsInfo  *ast.FieldsClause
 	LinesInfo   *ast.LinesClause

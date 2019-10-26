@@ -1917,7 +1917,6 @@ func (b *PlanBuilder) buildLoadData(ctx context.Context, ld *ast.LoadDataStmt) (
 	p := &LoadData{
 		IsLocal:     ld.IsLocal,
 		OnDuplicate: ld.OnDuplicate,
-		Path:        ld.Path,
 		Table:       ld.Table,
 		Columns:     ld.Columns,
 		FieldsInfo:  ld.FieldsInfo,

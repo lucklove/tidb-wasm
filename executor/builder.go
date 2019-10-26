@@ -731,7 +731,6 @@ func (b *executorBuilder) buildLoadData(v *plannercore.LoadData) Executor {
 		loadDataInfo: &LoadDataInfo{
 			row:          make([]types.Datum, len(insertVal.insertColumns)),
 			InsertValues: insertVal,
-			Path:         v.Path,
 			Table:        tbl,
 			FieldsInfo:   v.FieldsInfo,
 			LinesInfo:    v.LinesInfo,
