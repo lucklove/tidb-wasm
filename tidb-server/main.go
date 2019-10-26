@@ -2,10 +2,13 @@ package main
 
 import (
 	"context"
+	"syscall/js"
+	"time"
+	"fmt"
 
+	"github.com/pingcap/tidb/session"
 	"github.com/pingcap/tidb/store/mockstore"
 	"github.com/pingcap/tidb/store/mockstore/mocktikv"
-	"github.com/pingcap/tidb/session"
 )
 
 func setup() *Kit {
@@ -20,7 +23,6 @@ func setup() *Kit {
 		panic("create mock tikv store failed")
 	}
 	session.SetSchemaLease(0)
-	session.DisableStats4Test()
 	if _, err := session.BootstrapSession(store); err != nil {
 		panic("bootstrap session failed")
 	}
@@ -28,21 +30,28 @@ func setup() *Kit {
 	return NewKit(store)
 }
 
-
 func main() {
 	k := setup()
 	term := NewTerm()
 
-	for {
-		sql := term.Read()
+	js.Global().Set("execute", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		start := time.Now()
+		sql := args[0].String()
+		fmt.Println(sql)
 		if rs, err := k.Exec(sql); err != nil {
-			term.Error(err)
+			return term.Error(err)
 		} else if rs == nil {
-			continue
+			return term.WriteEmpty(time.Now().Sub(start))
+			return nil
 		} else if rows, err := session.ResultSetToStringSlice(context.Background(), k.se, rs); err != nil {
-			term.Error(err)
+			return term.Error(err)
 		} else {
-			term.Write(rs.Fields(), rows)
+			msg := term.WriteRows(rs.Fields(), rows, time.Now().Sub(start))
+			fmt.Println(msg)
+			return msg
 		}
-	}
+	}))
+
+	c := make(chan bool)
+	<-c
 }

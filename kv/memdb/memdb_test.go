@@ -19,8 +19,8 @@ import (
 	"testing"
 
 	. "github.com/pingcap/check"
-	"github.com/pingcap/goleveldb/leveldb/comparer"
-	"github.com/pingcap/goleveldb/leveldb/memdb"
+	"github.com/5kbpers/goleveldb/leveldb/comparer"
+	"github.com/5kbpers/goleveldb/leveldb/memdb"
 )
 
 const (

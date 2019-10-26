@@ -16,6 +16,7 @@ package timeutil
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -67,6 +68,9 @@ func InferSystemTZ() string {
 	// $TZ="" means use UTC.
 	// $TZ="foo" means use /usr/share/zoneinfo/foo.
 	tz, ok := syscall.Getenv("TZ")
+	if runtime.GOOS == "js" {
+		ok = true
+	}
 	switch {
 	case !ok:
 		path, err1 := filepath.EvalSymlinks("/etc/localtime")

@@ -14,18 +14,17 @@
 package mocktikv
 
 import (
-	"fmt"
 	"bytes"
 	"math"
 	"sync"
 
 	"github.com/dgryski/go-farm"
 	"github.com/pingcap/errors"
-	"github.com/pingcap/goleveldb/leveldb"
-	"github.com/pingcap/goleveldb/leveldb/iterator"
-	"github.com/pingcap/goleveldb/leveldb/opt"
-	"github.com/pingcap/goleveldb/leveldb/storage"
-	"github.com/pingcap/goleveldb/leveldb/util"
+	"github.com/5kbpers/goleveldb/leveldb"
+	"github.com/5kbpers/goleveldb/leveldb/iterator"
+	"github.com/5kbpers/goleveldb/leveldb/opt"
+	"github.com/5kbpers/goleveldb/leveldb/storage"
+	"github.com/5kbpers/goleveldb/leveldb/util"
 	"github.com/pingcap/kvproto/pkg/kvrpcpb"
 	"github.com/pingcap/parser/terror"
 	"github.com/pingcap/tidb/store/tikv/oracle"
