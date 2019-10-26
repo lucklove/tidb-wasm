@@ -1,7 +1,7 @@
 module github.com/pingcap/tidb
 
 require (
-	github.com/5kbpers/goleveldb v0.0.0-20191024165536-ae75d5cc1425 // indirect
+	github.com/5kbpers/goleveldb v0.0.0-20191026012746-22c00d9a18e3 // indirect
 	github.com/BurntSushi/toml v0.3.1
 	github.com/StackExchange/wmi v0.0.0-20180725035823-b12b22c5341f // indirect
 	github.com/blacktear23/go-proxyprotocol v0.0.0-20180807104634-af7a81e8dd0d
@@ -10,7 +10,7 @@ require (
 	github.com/coreos/etcd v3.3.13+incompatible
 	github.com/coreos/go-systemd v0.0.0-20181031085051-9002847aa142 // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
-	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548
+	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/cznic/sortutil v0.0.0-20150617083342-4c7342852e65
 	github.com/dgryski/go-farm v0.0.0-20190104051053-3adb47b1fb0f
 	github.com/dustin/go-humanize v1.0.0 // indirect
@@ -78,6 +78,6 @@ require (
 	sourcegraph.com/sourcegraph/appdash-data v0.0.0-20151005221446-73f23eafcf67
 )
 
-replace github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e => github.com/5kbpers/goleveldb v0.0.0-20191024165536-ae75d5cc1425
+replace github.com/pingcap/goleveldb v0.0.0-20171020122428-b9ff6c35079e => github.com/5kbpers/goleveldb v0.0.0-20191026012746-22c00d9a18e3
 
 go 1.13
