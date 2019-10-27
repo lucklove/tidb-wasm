@@ -35,11 +35,8 @@ func main() {
 	k := setup()
 	term := NewTerm()
 
-	js.Global().Set("createSession", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		fmt.Println("create session")
-		return k.CreateSession()
-	}))
-
+	id := k.CreateSession()
+	js.Global().Set("sessionID", id)
 	js.Global().Set("closeSession", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		id := args[0].Int()
 		fmt.Println("close session")

@@ -19,7 +19,16 @@
 			 { color:#09f753; font-family:monospace;
 			   padding:0.1em; white-space: pre;}
 			div.term span.jquery-console-prompt-label { font-weight:bold; }
-		  </style>
+			.inner {
+			  display: table;
+			  margin: 0 auto;
+			  font-family: monospace;
+			  font-size: 20px;
+			}
+			.outer {
+			  width:100%
+			}
+		</style>
 	</head>
 	<body>
 		<script>
@@ -29,8 +38,9 @@
 								  .then(buffer => WebAssembly.instantiate(buffer, go.importObject))
 								  .then(result => {
 					go.run(result.instance);
-					window.sessionID = createSession()
-                    bootstrapTerm()
+
+					document.getElementById("loading").style.display = "none";
+                    bootstrapTerm();
 				});
 			}
 
@@ -83,5 +93,10 @@
 			bootstrapGo();
 		</script>
 		<input id='file-uploader' type='file' hidden/>
+		<div id='loading' class='outer'>
+			<div class='inner'>
+				Loading...
+			</div>
+		</div>
 	</body>
 </html>
