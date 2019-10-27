@@ -3,6 +3,7 @@
 		<meta charset="utf-8"/>
 		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="jquery.console.js"></script>
+		<script type="text/javascript" src="localforage.js"></script>
 		<script src="wasm_exec.js"></script>
 		<style type="text/css" media="screen">
 			body { margin: 0px; }
@@ -20,6 +21,15 @@
 			 { color:#09f753; font-family:monospace;
 			   padding:0.1em; white-space: pre;}
 			div.term span.jquery-console-prompt-label { font-weight:bold; }
+			.inner {
+			  display: table;
+			  margin: 0 auto;
+			  font-family: monospace;
+			  font-size: 20px;
+			}
+			.outer {
+			  width:100%;
+			}
 		  </style>
 	</head>
 	<body>
@@ -32,8 +42,9 @@
 					go.run(result.instance);
 					function loopCreateTerm() {
 						if(window.createSession) {
-							window.sessionID = window.createSession;
+							window.sessionID = window.createSession();
 							bootstrapTerm();
+							document.getElementById("loading").style.display = "none";
 						} else {
 							setTimeout(loopCreateTerm, 100);
 						}
@@ -91,5 +102,10 @@
 			bootstrapGo();
 		</script>
 		<input id='file-uploader' type='file' hidden/>
+		<div id='loading' class='outer'>
+			<div class='inner'>
+				Loading...
+			</div>
+		</div>
 	</body>
 </html>
