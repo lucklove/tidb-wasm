@@ -30,8 +30,15 @@
 								  .then(buffer => WebAssembly.instantiate(buffer, go.importObject))
 								  .then(result => {
 					go.run(result.instance);
-					window.sessionID = createSession()
-                    bootstrapTerm()
+					function loopCreateTerm() {
+						if(window.createSession) {
+							window.sessionID = window.createSession;
+							bootstrapTerm();
+						} else {
+							setTimeout(loopCreateTerm, 100);
+						}
+					}
+					loopCreateTerm();
 				});
 			}
 
