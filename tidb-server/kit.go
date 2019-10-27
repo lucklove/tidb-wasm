@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 	"syscall/js"
+	"fmt"
 	"time"
 
 	"github.com/pingcap/errors"
@@ -94,6 +95,31 @@ func (k *Kit) Exec(id int, sql string) (sqlexec.RecordSet, error) {
 	return nil, errors.Trace(err)
 }
 
+func (k *Kit) ExecFile(id int) error {
+	c := make(chan error)
+	js.Global().Get("upload").Invoke(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			fmt.Println("success")
+			_, e := k.Exec(id, args[0].String())
+			c <- e
+		}()
+		return nil
+	}), js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			c <- errors.New(args[0].String())
+		}()
+		return nil
+	}))
+
+	select {
+	case e := <-c:
+		return e
+	case <-time.After(10 * time.Second):
+		return errors.New("upload timeout")
+	}
+	return <-c
+}
+
 func (k *Kit) ResultSetToStringSlice(ctx context.Context, id int, rs sqlexec.RecordSet) ([][]string, error) {
 	se, ok := k.sessions[id]
 	if !ok {
@@ -140,14 +166,17 @@ func handleLoadData(ctx context.Context, se session.Session, loadDataInfo *execu
 	loadDataInfo.SetMaxRowsInBatch(uint64(loadDataInfo.Ctx.GetSessionVars().DMLBatchSize))
 	loadDataInfo.StartStopWatcher()
 
-	err := loadDataInfo.Ctx.NewTxn(ctx)
-	if err != nil {
+	if err := loadDataInfo.Ctx.NewTxn(ctx); err != nil {
 		return err
 	}
 
-	go processData(ctx, loadDataInfo)
+	if err := processData(ctx, loadDataInfo); err != nil {
+		return err
+	}
 
-	err = loadDataInfo.CommitWork(ctx)
+	if err := loadDataInfo.CommitWork(ctx); err != nil {
+		return err
+	}
 	loadDataInfo.SetMessage()
 
 	var txn kv.Transaction
@@ -155,10 +184,6 @@ func handleLoadData(ctx context.Context, se session.Session, loadDataInfo *execu
 	txn, err1 = loadDataInfo.Ctx.Txn(true)
 	if err1 == nil {
 		if txn != nil && txn.Valid() {
-			if err != nil {
-				txn.Rollback()
-				return err
-			}
 			return se.CommitTxn(sessionctx.SetCommitCtx(ctx, loadDataInfo.Ctx))
 		}
 	}
@@ -166,9 +191,8 @@ func handleLoadData(ctx context.Context, se session.Session, loadDataInfo *execu
 	panic(err1)
 }
 
-func processData(ctx context.Context, loadDataInfo *executor.LoadDataInfo) {
+func processData(ctx context.Context, loadDataInfo *executor.LoadDataInfo) error {
 	var err error
-	var shouldBreak bool
 	var prevData, curData []byte
 	defer func() {
 		r := recover()
@@ -179,34 +203,32 @@ func processData(ctx context.Context, loadDataInfo *executor.LoadDataInfo) {
 		}
 	}()
 
-	curData = []byte(js.Global().Call("loadData").String())
-	for {
-		if len(curData) == 0 {
-			shouldBreak = true
-			if len(prevData) == 0 {
-				break
+	c := make(chan error)
+	js.Global().Get("upload").Invoke(js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			curData = []byte(args[0].String())
+			// prepare batch and enqueue task
+			prevData, err = insertDataWithCommit(ctx, prevData, curData, loadDataInfo)
+			if err == nil {
+				loadDataInfo.EnqOneTask(ctx)
 			}
-		}
-		select {
-		case <-loadDataInfo.QuitCh:
-			err = errors.New("processStream forced to quit")
-		default:
-		}
-		if err != nil {
-			break
-		}
-		// prepare batch and enqueue task
-		prevData, err = insertDataWithCommit(ctx, prevData, curData, loadDataInfo)
-		if err != nil {
-			break
-		}
-		if shouldBreak {
-			break
-		}
+			c <- err
+		}()
+		return nil
+	}), js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			c <- errors.New(args[0].String())
+		}()
+		return nil
+	}))
+
+	select {
+	case e := <-c:
+		return e
+	case <-time.After(10 * time.Second):
+		return errors.New("upload timeout")
 	}
-	if err == nil {
-		loadDataInfo.EnqOneTask(ctx)
-	}
+	return <-c
 }
 
 func insertDataWithCommit(ctx context.Context, prevData,

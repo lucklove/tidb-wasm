@@ -53,6 +53,13 @@ func main() {
 			for _, sql := range strings.Split(text, ";") {
 				if strings.Trim(sql, " ") == "" {
 					continue
+				} else if strings.Trim(sql, " \n\t\r") == "source" {
+					if err := k.ExecFile(id); err != nil {
+						ret += term.Error(err)
+					} else {
+						ret += term.WriteEmpty(time.Now().Sub(start))
+					}
+					continue
 				}
 				fmt.Println(sql)
 				if rs, err := k.Exec(id, sql); err != nil {

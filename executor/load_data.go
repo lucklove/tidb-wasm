@@ -62,19 +62,6 @@ func NewLoadDataInfo(ctx sessionctx.Context, row []types.Datum, tbl table.Table,
 // Next implements the Executor Next interface.
 func (e *LoadDataExec) Next(ctx context.Context, req *chunk.Chunk) error {
 	req.GrowAndReset(e.maxChunkSize)
-	// TODO: support load data without local field.
-	if !e.IsLocal {
-		return errors.New("Load Data: don't support load data without local field")
-	}
-	// TODO: support load data with replace field.
-	if e.OnDuplicate == ast.OnDuplicateKeyHandlingReplace {
-		return errors.New("Load Data: don't support load data with replace field")
-	}
-	// TODO: support lines terminated is "".
-	if len(e.loadDataInfo.LinesInfo.Terminated) == 0 {
-		return errors.New("Load Data: don't support load data terminated is nil")
-	}
-
 	sctx := e.loadDataInfo.ctx
 	val := sctx.Value(LoadDataVarKey)
 	if val != nil {
