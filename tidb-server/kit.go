@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"sync"
 	"syscall/js"
-	"fmt"
 	"time"
 
 	"github.com/pingcap/errors"
@@ -114,7 +113,7 @@ func (k *Kit) ExecFile(id int) error {
 	select {
 	case e := <-c:
 		return e
-	case <-time.After(10 * time.Second):
+	case <-time.After(30 * time.Second):
 		return errors.New("upload timeout")
 	}
 	return <-c
@@ -225,7 +224,7 @@ func processData(ctx context.Context, loadDataInfo *executor.LoadDataInfo) error
 	select {
 	case e := <-c:
 		return e
-	case <-time.After(10 * time.Second):
+	case <-time.After(30 * time.Second):
 		return errors.New("upload timeout")
 	}
 	return <-c

@@ -34,21 +34,13 @@ func setup() *Kit {
 func main() {
 	k := setup()
 	term := NewTerm()
-
-	id := k.CreateSession()
-	js.Global().Set("sessionID", id)
-	js.Global().Set("closeSession", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		id := args[0].Int()
-		fmt.Println("close session")
-		k.CloseSession(id)
-		return nil
-	}))
+	seid := k.CreateSession()
 
 	js.Global().Set("executeSQL", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
 			start := time.Now()
-			id := args[0].Int()
-			text := args[1].String()
+			id := seid
+			text := args[0].String()
 			ret := ""
 			for _, sql := range strings.Split(text, ";") {
 				if strings.Trim(sql, " ") == "" {
@@ -74,7 +66,7 @@ func main() {
 				}
 			}
 			fmt.Println(ret)
-			args[2].Invoke(ret)
+			args[1].Invoke(ret)
 		}()
 		return nil
 	}))
