@@ -1,1 +1,1 @@
-This project is deprecated since it's just the result of a hackthon and the code is not readable. We have make a [official implementation](https://github.com/pingcap/tidb-wasm) and you can play with it now.
+This project is deprecated since it's just the result of a hackthon and the code is not readable. We have make an [official implementation](https://github.com/pingcap/tidb-wasm) and you can play with it now.
